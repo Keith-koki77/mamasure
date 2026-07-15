@@ -7,7 +7,7 @@ import CommunityBanner from "./CommunityBanner";
 
 export default function FeaturesSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-white via-pink-50/30 to-purple-50/30 py-28">
+    <section id="why-mamasure" className="relative overflow-hidden bg-gradient-to-b from-white via-pink-50/30 to-purple-50/30 py-28">
 
       {/* Background Glow */}
 

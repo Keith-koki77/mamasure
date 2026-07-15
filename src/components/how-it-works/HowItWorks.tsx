@@ -66,7 +66,7 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-purple-50/30 via-white to-pink-50/20 py-32">
+    <section id="how-it-works" className="scroll-mt-28 relative overflow-hidden bg-gradient-to-b from-purple-50/30 via-white to-pink-50/20 py-32">
 
       {/* Background Decorations */}
 

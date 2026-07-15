@@ -38,7 +38,7 @@ export default function HeroSection() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <section className="relative overflow-hidden bg-white">
+    <section id="hero" className="relative overflow-hidden bg-white">
       {/* Ambient background wash */}
       <div
         aria-hidden

@@ -15,7 +15,7 @@ import {
 
 export default function PartnerSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-white via-purple-50/30 to-pink-50 py-28">
+    <section  id="partners" className="scroll-mt-28 relative overflow-hidden bg-gradient-to-b from-white via-purple-50/30 to-pink-50 py-28">
       {/* Decorative Background */}
 
       <div className="absolute -left-24 top-20 h-72 w-72 rounded-full bg-purple-200/20 blur-[120px]" />

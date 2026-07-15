@@ -1,28 +1,49 @@
 "use client";
 
 import Image from "next/image";
+
 import {
   Bell,
   ChevronDown,
   Search,
 } from "lucide-react";
 
-export default function Topbar() {
+import type { User } from "@supabase/supabase-js";
+
+import LogoutButton from "@/components/auth/LogoutButton";
+
+interface TopbarProps {
+  user: User;
+}
+
+export default function Topbar({
+  user,
+}: TopbarProps) {
+  const fullName =
+    user.user_metadata?.full_name ||
+    user.email?.split("@")[0] ||
+    "Mama";
+
   return (
-    <header className="sticky top-4 z-40 border-b border-purple-100/70 bg-white/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-purple-100 bg-white/80 backdrop-blur-xl">
 
       <div className="flex h-24 items-center justify-between px-8">
 
-        {/* Left */}
+        {/* LEFT */}
 
         <div>
 
           <h1 className="text-4xl font-extrabold text-slate-900">
 
             Good morning,
+
             <span className="text-purple-700">
-              {" "}Mary Wanjiku
+
+              {" "}
+              {fullName}
+
             </span>
+
             👋
 
           </h1>
@@ -36,7 +57,7 @@ export default function Topbar() {
 
         </div>
 
-        {/* Right */}
+        {/* RIGHT */}
 
         <div className="flex items-center gap-5">
 
@@ -58,7 +79,7 @@ export default function Topbar() {
 
           </div>
 
-          {/* Notification */}
+          {/* Notifications */}
 
           <button className="relative flex h-14 w-14 items-center justify-center rounded-2xl border border-purple-100 bg-white transition hover:border-purple-300 hover:bg-purple-50">
 
@@ -74,35 +95,67 @@ export default function Topbar() {
 
           {/* Profile */}
 
-          <button className="flex items-center gap-4 rounded-2xl border border-purple-100 bg-white px-4 py-2 shadow-sm transition hover:border-purple-300 hover:shadow-md">
+          <div className="group relative">
 
-            <Image
-              src="/avatar.jpg"
-              alt="Mary Wanjiku"
-              width={52}
-              height={52}
-              className="rounded-full object-cover"
-            />
+            <button className="flex items-center gap-4 rounded-2xl border border-purple-100 bg-white px-4 py-2 shadow-sm transition hover:border-purple-300 hover:shadow-md">
 
-            <div className="hidden text-left lg:block">
+              <Image
+                src="/avatar.jpg"
+                alt={fullName}
+                width={52}
+                height={52}
+                className="rounded-full object-cover"
+              />
 
-              <p className="font-semibold text-slate-900">
+              <div className="hidden text-left lg:block">
 
-                Mary Wanjiku
+                <p className="font-semibold text-slate-900">
 
-              </p>
+                  {fullName}
 
-              <p className="text-sm text-gray-500">
+                </p>
 
-                Premium Member
+                <p className="text-sm text-gray-500">
 
-              </p>
+                  {user.email}
+
+                </p>
+
+              </div>
+
+              <ChevronDown className="h-5 w-5 text-gray-500" />
+
+            </button>
+
+            {/* Dropdown */}
+
+            <div className="absolute right-0 mt-3 hidden w-64 rounded-2xl border border-purple-100 bg-white p-3 shadow-xl group-hover:block">
+
+              <div className="border-b border-gray-100 pb-3">
+
+                <p className="font-semibold">
+
+                  {fullName}
+
+                </p>
+
+                <p className="text-sm text-gray-500">
+
+                  {user.email}
+
+                </p>
+
+              </div>
+
+              <div className="mt-2">
+
+                <LogoutButton />
+
+              </div>
 
             </div>
 
-            <ChevronDown className="h-5 w-5 text-gray-500" />
-
-          </button>
+          </div>
 
         </div>
 

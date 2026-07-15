@@ -9,7 +9,7 @@ import WaitlistForm from "./WaitlistForm";
 
 export default function FAQSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-white to-purple-50/30 py-28">
+    <section id="faqs" className="scroll-mt-28 relative overflow-hidden bg-gradient-to-b from-white to-purple-50/30 py-28">
 
       {/* Decorative Elements */}
 

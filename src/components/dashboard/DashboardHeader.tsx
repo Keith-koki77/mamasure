@@ -23,17 +23,6 @@ export default function DashboardHeader() {
         {/* Left Content */}
 
         <div>
-
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 backdrop-blur-md">
-
-            <Sparkles className="h-4 w-4" />
-
-            <span className="text-sm font-medium">
-              Welcome back, Mary 👋
-            </span>
-
-          </div>
-
           <h2 className="mt-6 text-4xl font-extrabold leading-tight lg:text-5xl">
 
             Every contribution brings

@@ -18,41 +18,49 @@ import {
 
 const navigation = [
   {
+    id: "dashbaord",
     title: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
   },
   {
+    id: "marketplace",
     title: "Hospital Marketplace",
-    href: "/dashboard/marketplace",
+    href: "/dashboard/hospital-marketplace",
     icon: Building2,
   },
   {
+    id: "wallet",
     title: "Digital Maternity Wallet",
     href: "/dashboard/wallet",
     icon: Wallet,
   },
   {
+    id: "savings",
     title: "Savings Tracker",
     href: "/dashboard/savings",
     icon: TrendingUp,
   },
   {
+    id: "contributions",
     title: "Monthly Contributions",
     href: "/dashboard/contributions",
     icon: CalendarDays,
   },
   {
+    id: "pregnancy",
     title: "Pregnancy Journey",
     href: "/dashboard/pregnancy",
     icon: Baby,
   },
   {
+    id: "education",
     title: "Maternal Education",
     href: "/dashboard/education",
     icon: BookOpen,
   },
   {
+    id: "reminders",
     title: "Smart Reminders",
     href: "/dashboard/reminders",
     icon: Bell,
@@ -90,9 +98,14 @@ export default function Sidebar() {
         {navigation.map((item) => {
           const Icon = item.icon;
 
-          const active =
-            pathname === item.href ||
-            pathname.startsWith(item.href + "/");
+          const isActive = (href: string) => {
+            if (href === "/dashboard") {
+              return pathname === "/dashboard";
+            }
+            return pathname.startsWith(href);
+          };
+
+          const active = isActive(item.href);
 
           return (
             <Link
