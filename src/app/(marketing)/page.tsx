@@ -1,4 +1,4 @@
-import Navbar from "@/components/layout/Navbar";
+import Navbar from "@/components/layout/navbar/Navbar";
 import Hero from "@/components/hero/Hero";
 import ProblemSection from "@/components/problem/ProblemSection";
 import HowItWorks from "@/components/how-it-works/HowItWorks";
