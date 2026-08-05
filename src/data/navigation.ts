@@ -32,7 +32,7 @@ export interface NavLink {
   export const navActions: NavAction[] = [
     {
       label: "Join Waitlist",
-      href: "YOUR_GOOGLE_FORM_LINK",
+      href: "https://surveymars.com/q/NCVBi4nlK",
       variant: "primary",
       external: true,
     },
