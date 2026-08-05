@@ -75,7 +75,7 @@ export default function HeroSection() {
 
           <div className="mt-9 flex flex-wrap items-center gap-4">
             <a
-              href="#waitlist"
+              href="https://surveymars.com/q/NCVBi4nlK"
               className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#6D28D9] to-[#7C3AED] px-7 py-3.5 text-[15px] font-semibold text-white shadow-lg shadow-[#7C3AED]/30 transition-transform hover:scale-[1.03] active:scale-[0.98]"
             >
               Join the Waitlist

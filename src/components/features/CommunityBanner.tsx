@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import StatCard from "./StatCard";
+import Link from "next/link";
 
 export default function CommunityBanner() {
   return (
@@ -37,10 +38,15 @@ export default function CommunityBanner() {
             </p>
 
             <div className="mt-10 flex flex-wrap items-center gap-6">
-              <button className="group flex items-center gap-3 rounded-2xl bg-gradient-to-r from-purple-700 to-pink-500 px-8 py-4 font-semibold text-white shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+              <Link
+                href="https://surveymars.com/q/NCVBi4nlK"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-3 rounded-2xl bg-gradient-to-r from-purple-700 to-pink-500 px-8 py-4 font-semibold text-white shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
+              >
                 Join the Waitlist
                 <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-              </button>
+              </Link>
 
               <div className="flex items-center gap-4">
                 <div className="flex -space-x-4">
@@ -96,7 +102,9 @@ export default function CommunityBanner() {
                 <p className="text-sm font-bold text-slate-900">
                   Trusted & Verified
                 </p>
-                <p className="text-xs text-gray-500">Licensed hospital partners</p>
+                <p className="text-xs text-gray-500">
+                  Licensed hospital partners
+                </p>
               </div>
             </div>
           </div>
