@@ -29,7 +29,6 @@ export default function MobileDrawer({
   return (
     <>
       {/* Backdrop */}
-
       <div
         onClick={onClose}
         className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300 xl:hidden ${
@@ -40,7 +39,6 @@ export default function MobileDrawer({
       />
 
       {/* Drawer */}
-
       <aside
         id="mobile-navigation"
         className={`fixed right-0 top-0 z-50 flex h-screen w-full max-w-sm flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out xl:hidden ${
@@ -48,10 +46,8 @@ export default function MobileDrawer({
         }`}
       >
         {/* Header */}
-
         <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5">
-
-          <Logo />
+          <Logo onClick={onClose} />
 
           <button
             type="button"
@@ -61,13 +57,10 @@ export default function MobileDrawer({
           >
             <X className="h-5 w-5 text-slate-700" />
           </button>
-
         </div>
 
         {/* Navigation */}
-
         <div className="flex-1 overflow-y-auto px-6 py-8">
-
           <NavLinks
             direction="vertical"
             onClick={onClose}
@@ -76,9 +69,7 @@ export default function MobileDrawer({
           <div className="my-8 border-t border-gray-200" />
 
           {/* Actions */}
-
           <div className="space-y-4">
-
             {navActions.map((action) => (
               <Link
                 key={action.label}
@@ -95,15 +86,11 @@ export default function MobileDrawer({
                 {action.label}
               </Link>
             ))}
-
           </div>
-
         </div>
 
         {/* Footer */}
-
         <div className="border-t border-gray-100 px-6 py-6">
-
           <p className="text-center text-sm text-gray-500">
             Prepare. Plan. Welcome Life.
           </p>
@@ -111,9 +98,7 @@ export default function MobileDrawer({
           <p className="mt-2 text-center text-xs text-gray-400">
             © {new Date().getFullYear()} MamaSure
           </p>
-
         </div>
-
       </aside>
     </>
   );

@@ -19,13 +19,17 @@ export interface NavLink {
       label: "Why MamaSure",
       href: "/#why-mamasure",
     },
-    {
+    /*{
       label: "Partners",
       href: "/#partners",
-    },
+    },*/
     {
       label: "FAQs",
       href: "/#faqs",
+    },
+    {
+      label: "Blogs",
+      href: "/blog",
     },
   ];
   

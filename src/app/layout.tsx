@@ -11,12 +11,14 @@ const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700", "800"],
   variable: "--font-poppins",
   display: "swap",
+  adjustFontFallback: false,
+  fallback: ["system-ui", "sans-serif"],
 });
 
 export const metadata: Metadata = {
-  title: "MamaSure — Plan for Motherhood Before Pregnancy Begins",
+  title: "MamaSure — Plan for Motherhood Before the Journey Begins",
   description:
-    "Kenya's maternal healthcare planning platform. Prepare financially for pregnancy, delivery and maternal care through trusted hospital partnerships and smart savings planning.",
+    "Africa's maternal healthcare planning platform. Prepare financially for pregnancy, delivery and maternal care through trusted hospital partnerships and smart savings planning.",
 };
 
 export default function RootLayout({

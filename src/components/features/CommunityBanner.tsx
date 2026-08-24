@@ -138,7 +138,7 @@ export default function CommunityBanner() {
 
         {/* ================= TESTIMONIAL ================= */}
 
-        <div className="mt-16 overflow-hidden rounded-[40px] border border-purple-100 bg-gradient-to-br from-purple-50 via-white to-pink-50 p-10 shadow-[0_25px_80px_rgba(109,40,217,0.08)] lg:p-14">
+        {/*<div className="mt-16 overflow-hidden rounded-[40px] border border-purple-100 bg-gradient-to-br from-purple-50 via-white to-pink-50 p-10 shadow-[0_25px_80px_rgba(109,40,217,0.08)] lg:p-14">
           <div className="grid gap-10 lg:grid-cols-[auto_1fr] lg:items-start">
             <Quote className="h-12 w-12 shrink-0 text-purple-300" />
 
@@ -161,7 +161,7 @@ export default function CommunityBanner() {
               </div>
             </div>
           </div>
-        </div>
+        </div>*/}
       </div>
     </section>
   );

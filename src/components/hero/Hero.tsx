@@ -49,28 +49,32 @@ export default function HeroSection() {
         className="pointer-events-none absolute -right-24 top-24 h-72 w-72 rounded-full bg-[#7C3AED]/10 blur-3xl"
       />
 
-
       {/* ---------- Hero content ---------- */}
       <div className="relative z-10 mx-auto grid max-w-7xl grid-cols-1 gap-14 px-6 pb-20 pt-6 lg:grid-cols-2 lg:gap-8 lg:px-10 lg:pt-10">
         {/* Left: copy */}
         <div className="flex flex-col justify-center">
           <span className="mb-6 inline-flex w-fit items-center gap-2 rounded-full bg-[#FCE7F3] px-4 py-1.5 text-sm font-semibold text-[#BE185D]">
-            <Heart className="h-3.5 w-3.5 fill-[#DB2777] text-[#DB2777]" strokeWidth={0} />
+            <Heart
+              className="h-3.5 w-3.5 fill-[#DB2777] text-[#DB2777]"
+              strokeWidth={0}
+            />
             Kenya&apos;s Maternal Healthcare Planning Platform
           </span>
 
           <h1 className="text-[2.75rem] font-extrabold leading-[1.08] tracking-tight text-[#1E1B4B] sm:text-6xl">
             Plan for Motherhood{" "}
             <span className="bg-gradient-to-r from-[#DB2777] to-[#F472B6] bg-clip-text text-transparent">
-              Before Pregnancy
+              Before the Journey
             </span>{" "}
             Begins.
           </h1>
 
           <p className="mt-6 max-w-md text-lg leading-relaxed text-slate-500">
-            Mama Sure helps you prepare financially for pregnancy, delivery and
-            maternal care through trusted hospital partnerships and smart
-            savings planning.
+            Mama Sure enables you prepare financially for pregnancy, delivery
+            and maternal care through a flexible goal based savings plan and
+            trusted healthcare partnerships — giving you the confidence to plan,
+            prepare and access the care you deserve; so you can step into
+            motherhood with confidence, not financial uncertainty.
           </p>
 
           <div className="mt-9 flex flex-wrap items-center gap-4">
@@ -122,9 +126,14 @@ export default function HeroSection() {
           <div className="absolute left-[-1rem] top-[30%] hidden w-52 rounded-2xl bg-white p-4 shadow-2xl shadow-slate-300/40 sm:block">
             <div className="mb-2 flex items-center gap-2">
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FCE7F3]">
-                <Heart className="h-4 w-4 fill-[#DB2777] text-[#DB2777]" strokeWidth={0} />
+                <Heart
+                  className="h-4 w-4 fill-[#DB2777] text-[#DB2777]"
+                  strokeWidth={0}
+                />
               </span>
-              <span className="text-sm font-bold text-[#1E1B4B]">Weekly Tip</span>
+              <span className="text-sm font-bold text-[#1E1B4B]">
+                Weekly Tip
+              </span>
             </div>
             <p className="text-xs leading-relaxed text-slate-500">
               New tip on nutrition during early pregnancy
@@ -138,7 +147,9 @@ export default function HeroSection() {
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-50">
                 <TrendingUp className="h-4 w-4 text-emerald-500" />
               </span>
-              <span className="text-sm font-bold text-[#1E1B4B]">Goal Progress</span>
+              <span className="text-sm font-bold text-[#1E1B4B]">
+                Goal Progress
+              </span>
             </div>
             <p className="text-xs leading-relaxed text-slate-500">
               You&apos;re doing great! Keep it up
@@ -204,7 +215,9 @@ export default function HeroSection() {
                       <p className="text-[11px] font-bold text-emerald-500">
                         KES 2,500
                       </p>
-                      <p className="text-[9px] text-slate-400">Due in 12 days</p>
+                      <p className="text-[9px] text-slate-400">
+                        Due in 12 days
+                      </p>
                     </div>
                     <ChevronRight className="h-3.5 w-3.5 shrink-0 text-slate-300" />
                   </div>
@@ -253,7 +266,10 @@ export default function HeroSection() {
           <div className="absolute bottom-[12%] right-0 hidden w-48 rounded-2xl bg-white p-4 shadow-2xl shadow-slate-300/40 lg:block">
             <div className="mb-2 flex items-center gap-2">
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FCE7F3]">
-                <Bell className="h-4 w-4 fill-[#DB2777] text-[#DB2777]" strokeWidth={0} />
+                <Bell
+                  className="h-4 w-4 fill-[#DB2777] text-[#DB2777]"
+                  strokeWidth={0}
+                />
               </span>
               <span className="text-sm font-bold text-[#1E1B4B]">Reminder</span>
             </div>
@@ -273,15 +289,15 @@ export default function HeroSection() {
               <ShieldCheck className="h-5 w-5 text-[#7C3AED]" />
             </span>
             <p className="text-sm font-semibold text-[#1E1B4B] sm:text-[15px]">
-              Your health. Your future.{" "}
-              <span className="text-[#7C3AED]">Our priority.</span>
+              Prepare today. Protect tomorrow.{" "}
+              <span className="text-[#7C3AED]">Embrace motherhood.</span>
             </p>
           </div>
 
           <div className="hidden h-8 w-px bg-slate-100 sm:block" />
 
           <p className="text-center text-sm text-slate-500 sm:text-left">
-            Backed by trusted hospitals and financial partners.
+            Trusted healthcare partners. Smarter financial planning
           </p>
 
           <div className="hidden h-8 w-px bg-slate-100 sm:block" />
