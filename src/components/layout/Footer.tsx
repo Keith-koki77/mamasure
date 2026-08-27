@@ -36,16 +36,16 @@ export default function Footer() {
           <div>
             <h3 className="mb-6 font-bold text-gray-900">Platform</h3>
             <div className="flex flex-col gap-4 text-gray-600">
-              <Link href="#" className="w-fit transition hover:text-purple-700">
+              <Link href="/#how-it-works" className="w-fit transition hover:text-purple-700">
                 How It Works
               </Link>
-              <Link href="#" className="w-fit transition hover:text-purple-700">
+              {/*<Link href="#" className="w-fit transition hover:text-purple-700">
                 Hospital Packages
-              </Link>
-              <Link href="#" className="w-fit transition hover:text-purple-700">
+              </Link>*/}
+              {/*<Link href="#" className="w-fit transition hover:text-purple-700">
                 Savings Plans
-              </Link>
-              <Link href="#" className="w-fit transition hover:text-purple-700">
+              </Link>*/}
+              <Link href="/#faqs" className="w-fit transition hover:text-purple-700">
                 FAQs
               </Link>
             </div>
@@ -55,10 +55,10 @@ export default function Footer() {
           <div>
             <h3 className="mb-6 font-bold text-gray-900">Company</h3>
             <div className="flex flex-col gap-4 text-gray-600">
-              <Link href="#" className="w-fit transition hover:text-purple-700">
+              <Link href="/about" className="w-fit transition hover:text-purple-700">
                 About
               </Link>
-              <Link href="#" className="w-fit transition hover:text-purple-700">
+              <Link href="/blog" className="w-fit transition hover:text-purple-700">
                 Blog
               </Link>
               <Link href="#" className="w-fit transition hover:text-purple-700">

@@ -39,49 +39,44 @@ export default function FAQItem({
 
   return (
     <div
-      className={`group overflow-hidden rounded-[28px] border bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
+      className={`group overflow-hidden rounded-2xl sm:rounded-3xl lg:rounded-[28px] border bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
         isOpen ? colors.border : "border-gray-100"
       }`}
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between gap-6 p-7 text-left"
+        className="flex w-full items-start sm:items-center justify-between gap-4 sm:gap-6 p-4 sm:p-6 lg:p-7 text-left"
       >
-        {/* Left */}
-
-        <div className="flex items-center gap-5">
+        {/* Left Section */}
+        <div className="flex items-center gap-3 sm:gap-5 flex-1">
           {/* Icon */}
-
           <div
-            className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full ${colors.bg} transition-transform duration-300 group-hover:scale-110`}
+            className={`flex h-12 w-12 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-2xl sm:rounded-full ${colors.bg} transition-transform duration-300 group-hover:scale-105`}
           >
-            <Icon className={`h-8 w-8 ${colors.icon}`} />
+            <Icon className={`h-6 w-6 sm:h-8 sm:w-8 ${colors.icon}`} />
           </div>
 
           {/* Question */}
-
-          <h3 className="text-xl font-bold text-slate-900 md:text-2xl">
+          <h3 className="text-base sm:text-xl md:text-2xl font-bold text-slate-900 leading-snug">
             {question}
           </h3>
         </div>
 
-        {/* Expand */}
-
+        {/* Expand/Collapse Toggle */}
         <div
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ${
+          className={`flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full transition-colors duration-300 mt-1 sm:mt-0 ${
             isOpen ? colors.bg : "bg-gray-50"
           }`}
         >
           {isOpen ? (
-            <Minus className={`h-5 w-5 ${colors.button}`} />
+            <Minus className={`h-4 w-4 sm:h-5 sm:w-5 ${colors.button}`} />
           ) : (
-            <Plus className={`h-5 w-5 ${colors.button}`} />
+            <Plus className={`h-4 w-4 sm:h-5 sm:w-5 ${colors.button}`} />
           )}
         </div>
       </button>
 
       {/* Content */}
-
       <div
         className={`grid transition-all duration-500 ease-in-out ${
           isOpen
@@ -90,8 +85,8 @@ export default function FAQItem({
         }`}
       >
         <div className="overflow-hidden">
-          <div className="px-7 pb-7 pl-[104px]">
-            <p className="max-w-2xl text-lg leading-8 text-gray-600">
+          <div className="px-4 pb-5 sm:px-6 sm:pb-6 lg:pb-7 lg:pl-[104px]">
+            <p className="max-w-2xl text-sm sm:text-base lg:text-lg leading-relaxed text-gray-600">
               {answer}
             </p>
           </div>
