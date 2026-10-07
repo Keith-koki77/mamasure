@@ -32,8 +32,12 @@ export interface NavLink {
       href: "/#faqs",
     },
     {
-      label: "Blogs",
+      label: "Blog",
       href: "/blog",
+    },
+    {
+      label: "About",
+      href: "/about",
     },
   ];
   

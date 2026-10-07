@@ -1,108 +1,234 @@
 "use client";
 
+import { useEffect, useRef, type ReactNode, type RefObject } from "react";
+import { createScope, createTimeline, stagger } from "animejs";
 import {
+  BookOpen,
   Building2,
-  Wallet,
+  CheckCircle2,
   CreditCard,
   LineChart,
-  BookOpen,
-  CheckCircle2,
-  Sparkles,
   ShieldCheck,
+  Sparkles,
+  Wallet,
 } from "lucide-react";
 
 import StepCard from "./StepCard";
+import type { PhoneType } from "./MiniPhoneCard";
+import { qsa, usePrefersReducedMotion } from "./motion";
+
+const ICON = "h-6 w-6 sm:h-7 sm:w-7";
+
+/* Hidden until revealed; `motion-reduce` keeps it visible without JS. */
+const REVEAL = "opacity-0 will-change-transform motion-reduce:opacity-100";
+
+interface Step {
+  number: number;
+  title: string;
+  description: string;
+  icon: ReactNode;
+  phoneType: PhoneType;
+}
+
+const STEPS: readonly Step[] = [
+  {
+    number: 1,
+    title: "Choose your hospital",
+    description:
+      "Browse maternity hospitals and compare their delivery packages before making a decision.",
+    icon: <Building2 className={ICON} />,
+    phoneType: "hospital",
+  },
+  {
+    number: 2,
+    title: "Set your savings goal",
+    description:
+      "Mama Sure calculates how much you need to save based on your selected maternity package.",
+    icon: <Wallet className={ICON} />,
+    phoneType: "goal",
+  },
+  {
+    number: 3,
+    title: "Contribute easily",
+    description:
+      "Save consistently through flexible M-Pesa payments that fit your monthly budget.",
+    icon: <CreditCard className={ICON} />,
+    phoneType: "payment",
+  },
+  {
+    number: 4,
+    title: "Track your progress",
+    description:
+      "Monitor every contribution and watch your maternity fund grow with real-time updates.",
+    icon: <LineChart className={ICON} />,
+    phoneType: "progress",
+  },
+  {
+    number: 5,
+    title: "Learn along the journey",
+    description:
+      "Receive trusted maternal health education, reminders, and preparation tips personalised to your stage.",
+    icon: <BookOpen className={ICON} />,
+    phoneType: "education",
+  },
+  {
+    number: 6,
+    title: "Welcome your baby confidently",
+    description:
+      "When the time comes, you'll be financially prepared and ready to focus on what truly matters.",
+    icon: <CheckCircle2 className={ICON} />,
+    phoneType: "success",
+  },
+];
+
+const FEATURES = [
+  "Hospital Comparison",
+  "Flexible Savings",
+  "Secure Payments",
+  "Health Education",
+] as const;
+
+/* ---------------------------------------------------------
+   Staggered slide-up reveal for every [data-reveal] inside
+   `ref`, fired once by an IntersectionObserver.
+--------------------------------------------------------- */
+
+function useRevealOnView(
+  ref: RefObject<HTMLElement | null>,
+  reduced: boolean,
+  threshold = 0.2,
+): void {
+  useEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+
+    const items = qsa(root, "[data-reveal]");
+
+    if (reduced) {
+      items.forEach((el) => {
+        el.style.opacity = "1";
+      });
+      return () => {
+        items.forEach((el) => {
+          el.style.opacity = "";
+        });
+      };
+    }
+
+    const scope = createScope({ root });
+    let played = false;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting || played) return;
+        played = true;
+        io.disconnect();
+
+        scope.add(() => {
+          const tl = createTimeline({
+            defaults: { ease: "outCubic" },
+            onComplete: () => {
+              items.forEach((el) => {
+                el.style.willChange = "auto";
+              });
+            },
+          });
+
+          tl.add(
+            items,
+            {
+              opacity: [0, 1],
+              translateY: [28, 0],
+              duration: 800,
+              delay: stagger(110),
+            },
+            0,
+          );
+        });
+      },
+      { threshold },
+    );
+
+    io.observe(root);
+
+    return () => {
+      io.disconnect();
+      scope.revert();
+    };
+  }, [ref, reduced, threshold]);
+}
 
 export default function HowItWorks() {
-  const steps = [
-    {
-      number: 1,
-      title: "Choose Your Hospital",
-      description:
-        "Browse trusted maternity hospitals and compare their delivery packages before making a decision.",
-      icon: <Building2 className="h-6 w-6 sm:h-7 sm:w-7" />,
-      phoneType: "hospital" as const,
-    },
-    {
-      number: 2,
-      title: "Set Your Savings Goal",
-      description:
-        "Mama Sure calculates how much you need to save based on your selected maternity package.",
-      icon: <Wallet className="h-6 w-6 sm:h-7 sm:w-7" />,
-      phoneType: "goal" as const,
-    },
-    {
-      number: 3,
-      title: "Contribute Easily",
-      description:
-        "Save consistently through flexible M-Pesa payments that fit your monthly budget.",
-      icon: <CreditCard className="h-6 w-6 sm:h-7 sm:w-7" />,
-      phoneType: "payment" as const,
-    },
-    {
-      number: 4,
-      title: "Track Your Progress",
-      description:
-        "Monitor every contribution and watch your maternity fund grow with real-time updates.",
-      icon: <LineChart className="h-6 w-6 sm:h-7 sm:w-7" />,
-      phoneType: "progress" as const,
-    },
-    {
-      number: 5,
-      title: "Learn Along the Journey",
-      description:
-        "Receive trusted maternal health education, reminders, and preparation tips personalized to your stage.",
-      icon: <BookOpen className="h-6 w-6 sm:h-7 sm:w-7" />,
-      phoneType: "education" as const,
-    },
-    {
-      number: 6,
-      title: "Welcome Your Baby Confidently",
-      description:
-        "When the time comes, you'll be financially prepared and ready to focus on what truly matters.",
-      icon: <CheckCircle2 className="h-6 w-6 sm:h-7 sm:w-7" />,
-      phoneType: "success" as const,
-    },
-  ];
+  const reduced = usePrefersReducedMotion();
+
+  const headerRef = useRef<HTMLDivElement>(null);
+  const footerRef = useRef<HTMLDivElement>(null);
+
+  useRevealOnView(headerRef, reduced, 0.25);
+  useRevealOnView(footerRef, reduced, 0.2);
 
   return (
     <section
       id="how-it-works"
-      className="scroll-mt-16 sm:scroll-mt-28 relative overflow-hidden bg-gradient-to-b from-purple-50/30 via-white to-pink-50/20 py-12 sm:py-20 lg:py-32"
+      className="relative scroll-mt-16 overflow-hidden bg-gradient-to-b from-purple-50/40 via-white to-pink-50/40 py-14 sm:scroll-mt-28 sm:py-20 lg:py-28"
     >
-      {/* Background Decorations */}
-      <div className="absolute -top-52 left-0 h-[300px] w-[300px] sm:h-[500px] sm:w-[500px] rounded-full bg-purple-200/20 blur-[100px] sm:blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-0 right-0 h-[300px] w-[300px] sm:h-[450px] sm:w-[450px] rounded-full bg-pink-200/20 blur-[100px] sm:blur-[140px] pointer-events-none" />
+      {/* Background decorations */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-52 left-0 h-[300px] w-[300px] rounded-full bg-purple-300/25 blur-[100px] sm:h-[500px] sm:w-[500px] sm:blur-[140px]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute bottom-0 right-0 h-[300px] w-[300px] rounded-full bg-pink-300/25 blur-[100px] sm:h-[450px] sm:w-[450px] sm:blur-[140px]"
+      />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Badge */}
-        <div className="mx-auto flex w-fit items-center gap-2 rounded-full bg-purple-100 px-4 py-2 sm:px-6 sm:py-3">
-          <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-purple-700 shrink-0" />
-          <span className="text-xs sm:text-sm font-medium text-purple-700">
-            How Mama Sure Works
-          </span>
+        {/* =====================================================
+            HEADER
+        ====================================================== */}
+        <div ref={headerRef}>
+          {/* Badge */}
+          <div
+            data-reveal
+            className={`mx-auto flex w-fit items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-4 py-2 ${REVEAL}`}
+          >
+            <Sparkles className="h-4 w-4 shrink-0 text-purple-700" />
+            <span className="text-sm font-semibold text-purple-700">
+              How Mama Sure works
+            </span>
+          </div>
+
+          {/* Heading */}
+          <h2 className="mx-auto mt-6 max-w-4xl text-center text-[clamp(2rem,6.4vw,3.9rem)] font-extrabold leading-[1.05] tracking-[-0.035em] sm:mt-8">
+            <span data-reveal className={`block text-slate-900 ${REVEAL}`}>
+              Preparing for motherhood
+            </span>
+            <span data-reveal className={`block text-[#D80A68] ${REVEAL}`}>
+              has never been this simple.
+            </span>
+          </h2>
+
+          <p
+            data-reveal
+            className={`mx-auto mt-5 max-w-2xl text-center text-[16px] leading-[1.7] text-gray-600 sm:mt-7 sm:text-lg ${REVEAL}`}
+          >
+            From choosing your preferred hospital to saving consistently and
+            accessing trusted maternal guidance, Mama Sure supports you every
+            step of the way.
+          </p>
         </div>
 
-        {/* Heading */}
-        <h2 className="mx-auto mt-6 sm:mt-8 max-w-4xl text-center text-3xl sm:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight">
-          <span className="text-slate-900 block sm:inline">Preparing for Motherhood </span>
-          <span className="block sm:inline text-pink-500">
-            Has Never Been This Simple
-          </span>
-        </h2>
-
-        {/* Description */}
-        <p className="mx-auto mt-4 sm:mt-8 max-w-3xl text-center text-base sm:text-lg lg:text-xl leading-relaxed text-white">
-          From choosing your preferred hospital to saving consistently and
-          accessing trusted maternal guidance, Mama Sure supports you every
-          step of the way.
-        </p>
-
-        {/* Cards Grid */}
-        <div className="relative mt-10 sm:mt-16 lg:mt-20 grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {steps.map((step) => (
+        {/* =====================================================
+            STEPS (each card runs its own entrance when it scrolls in)
+            mobile : single column
+            tablet : 2 columns
+            laptop : 3 columns
+        ====================================================== */}
+        <ol className="mt-12 grid grid-cols-1 gap-6 sm:mt-16 sm:grid-cols-2 sm:gap-6 lg:mt-20 lg:grid-cols-3 lg:gap-8">
+          {STEPS.map((step, i) => (
             <StepCard
               key={step.number}
+              index={i}
               number={step.number}
               title={step.title}
               description={step.description}
@@ -110,47 +236,80 @@ export default function HowItWorks() {
               phoneType={step.phoneType}
             />
           ))}
-        </div>
+        </ol>
 
-        {/* Bottom Banner */}
-        <div className="mt-16 sm:mt-24 overflow-hidden rounded-2xl sm:rounded-3xl lg:rounded-[36px] bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500 p-[1px] shadow-[0_25px_80px_rgba(124,58,237,0.15)]">
-          <div className="rounded-[15px] sm:rounded-[23px] lg:rounded-[35px] bg-white p-6 sm:p-8 lg:p-10">
-            <div className="flex flex-col lg:grid lg:grid-cols-[80px_1fr_auto] items-center gap-6 sm:gap-8 lg:gap-10">
-              {/* Icon */}
-              <div className="flex h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 shrink-0 items-center justify-center rounded-full bg-purple-100">
-                <ShieldCheck className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-purple-700" />
-              </div>
+        {/* =====================================================
+            FOOTER
+        ====================================================== */}
+        <div ref={footerRef}>
+          <p
+            data-reveal
+            className={`mt-8 text-center text-[13px] text-gray-500 ${REVEAL}`}
+          >
+            App screens are illustrative examples.
+          </p>
 
-              {/* Content */}
-              <div className="text-center lg:text-left">
-                <h3 className="text-2xl sm:text-3xl font-bold text-slate-900">
-                  Your Journey. Our Technology.
-                </h3>
-                <p className="mt-2 sm:mt-4 text-base sm:text-lg leading-relaxed text-gray-600">
-                  Mama Sure helps you plan early, save consistently,
-                  receive trusted health information, and prepare for one of
-                  life's most important milestones with confidence.
-                </p>
-              </div>
+          {/* Glass banner with a gradient hairline border */}
+          <div
+            data-reveal
+            className={`relative mt-10 overflow-hidden rounded-[28px] bg-white/60 shadow-[0_25px_80px_rgba(124,58,237,0.15)] backdrop-blur-xl sm:mt-14 lg:rounded-[36px] ${REVEAL}`}
+          >
+            {/* Colour behind the glass */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -left-16 -top-16 h-56 w-56 rounded-full bg-purple-400/30 blur-3xl"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -bottom-20 -right-10 h-56 w-56 rounded-full bg-pink-400/30 blur-3xl"
+            />
 
-              {/* Features List */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:flex lg:flex-col gap-2.5 sm:gap-3 w-full lg:w-auto">
-                {[
-                  "Trusted Hospitals",
-                  "Flexible Savings",
-                  "Secure Payments",
-                  "Health Education",
-                ].map((feature) => (
-                  <div
-                    key={feature}
-                    className="flex items-center justify-center lg:justify-start gap-2.5 rounded-full bg-purple-50 px-4 py-2.5 sm:px-5 sm:py-3"
-                  >
-                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-purple-700 shrink-0" />
-                    <span className="text-xs sm:text-sm font-medium text-slate-700 whitespace-nowrap">
-                      {feature}
-                    </span>
-                  </div>
-                ))}
+            {/* Gradient border (masked so the glass stays see-through) */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500 p-px"
+              style={{
+                WebkitMask:
+                  "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+                WebkitMaskComposite: "xor",
+                mask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+                maskComposite: "exclude",
+              }}
+            />
+
+            <div className="relative p-6 sm:p-8 lg:p-10">
+              <div className="grid items-center gap-6 sm:gap-8 lg:grid-cols-[auto_1fr_auto] lg:gap-10">
+                {/* Icon */}
+                <div className="mx-auto flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-purple-100 sm:h-20 sm:w-20 lg:mx-0 lg:h-24 lg:w-24">
+                  <ShieldCheck className="h-8 w-8 text-purple-700 sm:h-10 sm:w-10 lg:h-12 lg:w-12" />
+                </div>
+
+                {/* Content */}
+                <div className="text-center lg:text-left">
+                  <h3 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                    Your journey. Our technology.
+                  </h3>
+                  <p className="mx-auto mt-3 max-w-[56ch] text-[16px] leading-[1.7] text-gray-600 sm:text-lg lg:mx-0">
+                    Mama Sure helps you plan early, save consistently, receive
+                    trusted health information, and prepare for one of
+                    life&apos;s most important milestones with confidence.
+                  </p>
+                </div>
+
+                {/* Features */}
+                <ul className="grid w-full grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:flex lg:w-auto lg:flex-col">
+                  {FEATURES.map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-center justify-center gap-2 rounded-full bg-purple-50/80 px-3 py-2.5 sm:px-4 lg:justify-start lg:px-5 lg:py-3"
+                    >
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-purple-700 sm:h-5 sm:w-5" />
+                      <span className="text-[12.5px] font-medium text-slate-700 sm:text-sm lg:whitespace-nowrap">
+                        {feature}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>

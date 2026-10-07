@@ -48,14 +48,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+interface SanityChild {
+  text?: string
+}
+
+interface SanityBlock {
+  _type: string
+  style?: string
+  children?: SanityChild[]
+}
+
 interface Post {
   _id: string
   title: string
   slug: { current: string }
-  mainImage?: any
+  mainImage?: Parameters<typeof urlFor>[0]
   publishedAt?: string
-  body?: any
-  author?: { name: string; image?: any }
+  body?: SanityBlock[]
+  author?: { name: string; image?: Parameters<typeof urlFor>[0] }
 }
 
 function slugify(text: string) {
@@ -112,9 +122,9 @@ export default async function SinglePostPage({
 
   const headings =
     post.body
-      ?.filter((block: any) => block._type === 'block' && ['h2', 'h3'].includes(block.style))
-      .map((block: any) => {
-        const text = block.children?.map((c: any) => c.text).join('') || ''
+      ?.filter((block: SanityBlock) => block._type === 'block' && block.style && ['h2', 'h3'].includes(block.style))
+      .map((block: SanityBlock) => {
+        const text = block.children?.map((c: SanityChild) => c.text || '').join('') || ''
         return {
           text,
           level: block.style,
@@ -124,7 +134,7 @@ export default async function SinglePostPage({
 
   const portableTextComponents = {
     block: {
-      h2: ({ children }: any) => {
+      h2: ({ children }: { children?: React.ReactNode }) => {
         const id = slugify(String(children))
         return (
           <h2 id={id} className="scroll-mt-24 text-xl sm:text-2xl font-bold text-gray-900 mt-8 sm:mt-10 mb-3 sm:mb-4">
@@ -132,7 +142,7 @@ export default async function SinglePostPage({
           </h2>
         )
       },
-      h3: ({ children }: any) => {
+      h3: ({ children }: { children?: React.ReactNode }) => {
         const id = slugify(String(children))
         return (
           <h3 id={id} className="scroll-mt-24 text-lg sm:text-xl font-semibold text-gray-900 mt-6 sm:mt-8 mb-2 sm:mb-3">
@@ -207,7 +217,7 @@ export default async function SinglePostPage({
               Table of Contents
             </h2>
             <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
-              {headings.map((h: any, index: number) => (
+              {headings.map((h: { text: string; level?: string; id: string }, index: number) => (
                 <li key={index} className={h.level === 'h3' ? 'pl-3 sm:pl-4' : ''}>
                   <a
                     href={`#${h.id}`}

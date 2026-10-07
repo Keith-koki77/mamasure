@@ -9,10 +9,10 @@ export interface Post {
   _id: string
   title: string
   slug: { current: string }
-  mainImage?: any
+  mainImage?: Parameters<typeof urlFor>[0]
   publishedAt?: string
   categories?: string[]
-  author?: { name: string; image?: any }
+  author?: { name: string; image?: Parameters<typeof urlFor>[0] }
 }
 
 export default function BlogListClient({ posts }: { posts: Post[] }) {
@@ -53,8 +53,8 @@ export default function BlogListClient({ posts }: { posts: Post[] }) {
               >
                 {category}
               </button>
-            )}
-          )}
+            )
+          })}
         </div>
       )}
 

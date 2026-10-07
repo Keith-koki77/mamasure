@@ -35,7 +35,8 @@ export async function POST(req: NextRequest) {
       revalidated: true,
       now: Date.now(),
     })
-  } catch (err: any) {
-    return new NextResponse(err.message, { status: 500 })
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+    return new NextResponse(errorMessage, { status: 500 })
   }
 }

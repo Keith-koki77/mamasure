@@ -1,6 +1,8 @@
 import { client } from '@/sanity/lib/client'
 import BlogListClient, { Post } from './BlogListClient'
 
+export const revalidate = 60
+
 async function getPosts(): Promise<Post[]> {
   const query = `*[_type == "post"] | order(publishedAt desc) {
     _id,
@@ -11,7 +13,14 @@ async function getPosts(): Promise<Post[]> {
     "categories": categories[]->title,
     author->{ name, image }
   }`
-  return await client.fetch(query, {}, { next: { revalidate: 60 } })
+  return await client.fetch(
+    query,
+    {},
+    {
+      next: { revalidate: 60 },
+      signal: AbortSignal.timeout(10000),
+    }
+  )
 }
 
 export default async function BlogPage() {

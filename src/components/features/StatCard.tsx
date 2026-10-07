@@ -1,60 +1,50 @@
 "use client";
 
-import { LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+
+import CountUp from "./CountUp";
 
 interface StatCardProps {
   icon: LucideIcon;
   value: string;
   label: string;
   description: string;
-  color?: "purple" | "pink";
+  color: "purple" | "pink";
 }
 
+const COLORS = {
+  purple: { circle: "bg-purple-100", icon: "text-purple-700" },
+  pink: { circle: "bg-pink-100", icon: "text-pink-600" },
+} as const;
+
+/*
+ * NOTE: StatCard.tsx wasn't included in what you pasted, so the markup and
+ * classes below are a reconstruction. If you have the original, keep its
+ * markup and change only one thing: render the value as
+ * <CountUp text={value} /> instead of {value}.
+ */
 export default function StatCard({
   icon: Icon,
   value,
   label,
   description,
-  color = "purple",
+  color,
 }: StatCardProps) {
-  const colors = {
-    purple: {
-      iconBg: "bg-purple-100",
-      icon: "text-purple-700",
-      value: "text-purple-700",
-    },
-    pink: {
-      iconBg: "bg-pink-100",
-      icon: "text-pink-500",
-      value: "text-pink-500",
-    },
-  };
-
-  const theme = colors[color];
+  const c = COLORS[color];
 
   return (
-    <div className="group rounded-2xl sm:rounded-3xl border border-purple-100 bg-white p-6 sm:p-8 text-center shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl">
-      {/* Icon */}
-      <div
-        className={`mx-auto flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-xl sm:rounded-2xl ${theme.iconBg}`}
+    <div className="rounded-3xl bg-white p-8 text-center shadow-lg ring-1 ring-purple-100">
+      <span
+        className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full ${c.circle}`}
       >
-        <Icon className={`h-6 w-6 sm:h-8 sm:w-8 ${theme.icon}`} />
-      </div>
+        <Icon className={`h-6 w-6 ${c.icon}`} />
+      </span>
 
-      {/* Value */}
-      <h3 className={`mt-4 sm:mt-6 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight ${theme.value}`}>
-        {value}
-      </h3>
-
-      {/* Label */}
-      <p className="mt-2 sm:mt-3 text-base sm:text-lg font-semibold text-slate-900">
-        {label}
+      <p className="mt-5 text-4xl font-extrabold tracking-tight text-slate-900 tabular-nums">
+        <CountUp text={value} />
       </p>
-
-      {/* Description */}
-      <p className="mt-1 sm:mt-2 text-xs sm:text-sm leading-relaxed text-gray-500">
-        {description}
-      </p>
+      <p className="mt-1 text-base font-semibold text-slate-900">{label}</p>
+      <p className="mt-1 text-sm text-gray-500">{description}</p>
     </div>
   );
 }
