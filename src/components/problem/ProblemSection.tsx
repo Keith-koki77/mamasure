@@ -48,10 +48,15 @@ export default function ProblemSection() {
         setIsVisible(true);
         observer.disconnect();
 
+        /*
+         * Anime.js createScope().add() expects the callback to return
+         * void or a cleanup callback. animate() returns a JSAnimation,
+         * so we intentionally do not return the animation here.
+         */
         scopeRef.current = createScope({
           root: section,
         }).add(() => {
-          const timeline = animate(
+          animate(
             "[data-problem-badge], [data-problem-heading], [data-problem-copy], [data-problem-tagline]",
             {
               opacity: [0, 1],
@@ -61,8 +66,6 @@ export default function ProblemSection() {
               ease: "outCubic",
             },
           );
-
-          return timeline;
         });
       },
       {
@@ -151,13 +154,11 @@ export default function ProblemSection() {
       />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
         {/* ===================================================
             HEADER
         ==================================================== */}
 
         <div className="text-center">
-
           {/* Badge */}
           <div
             data-problem-reveal
@@ -296,7 +297,9 @@ export default function ProblemSection() {
           "
         >
           <ProblemCard
-            icon={<Coins className="h-6 w-6 text-purple-700 sm:h-7 sm:w-7" />}
+            icon={
+              <Coins className="h-6 w-6 text-purple-700 sm:h-7 sm:w-7" />
+            }
             image="/problem-cost.jpg"
             statistic="KES 100K+"
             statisticValue={100}
@@ -310,7 +313,9 @@ export default function ProblemSection() {
           />
 
           <ProblemCard
-            icon={<Hospital className="h-6 w-6 text-pink-600 sm:h-7 sm:w-7" />}
+            icon={
+              <Hospital className="h-6 w-6 text-pink-600 sm:h-7 sm:w-7" />
+            }
             image="/problem-hospital.jpg"
             statistic="26%"
             statisticValue={26}
@@ -528,7 +533,6 @@ function InsightBanner({
       />
 
       <div className="relative grid items-center gap-8 lg:grid-cols-[auto_1fr_auto] lg:gap-12">
-
         {/* Lightbulb */}
         <div
           data-insight-reveal
@@ -564,9 +568,8 @@ function InsightBanner({
           </h3>
 
           <p className="mt-3 max-w-[56ch] text-[16px] leading-[1.7] text-white/85 sm:text-lg">
-            Families want to be ready for motherhood. What&apos;s missing
-            is a simple, trusted and affordable way to start planning
-            financially{" "}
+            Families want to be ready for motherhood. What&apos;s missing is a
+            simple, trusted and affordable way to start planning financially{" "}
             <strong className="font-semibold text-white">
               before pregnancy begins.
             </strong>
