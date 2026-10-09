@@ -1,3 +1,4 @@
+import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
@@ -6,47 +7,17 @@ import { client } from '@/sanity/lib/client'
 import { urlFor } from '@/sanity/lib/image'
 import type { Metadata } from 'next'
 
+const BASE_URL = 'https://www.mamasure.com'
+const REVALIDATE_SECONDS = 60
+const DEFAULT_DESCRIPTION = 'Read the latest insights from MamaSure.'
+
 type Props = {
   params: Promise<{ slug: string }>
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params
-
-  const query = `*[_type == "post" && slug.current == $slug][0]{
-    title,
-    "excerpt": array::join(string::split((body[0].children[0].text), "")[0..150], "") + "...",
-    mainImage,
-    author->{ name }
-  }`
-
-  const post = await client.fetch(query, { slug })
-
-  if (!post) {
-    return {
-      title: 'Post Not Found | MamaSure',
-    }
-  }
-
-  const imageUrl = post.mainImage ? urlFor(post.mainImage).url() : undefined
-
-  return {
-    title: `${post.title} | MamaSure`,
-    description: post.excerpt || 'Read the latest insights from MamaSure.',
-    openGraph: {
-      title: post.title,
-      description: post.excerpt || 'Read the latest insights from MamaSure.',
-      type: 'article',
-      images: imageUrl ? [{ url: imageUrl }] : [],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: post.title,
-      description: post.excerpt || 'Read the latest insights from MamaSure.',
-      images: imageUrl ? [imageUrl] : [],
-    },
-  }
-}
+/* -------------------------------------------------------------------------- */
+/*  Types                                                                     */
+/* -------------------------------------------------------------------------- */
 
 interface SanityChild {
   text?: string
@@ -64,9 +35,14 @@ interface Post {
   slug: { current: string }
   mainImage?: Parameters<typeof urlFor>[0]
   publishedAt?: string
+  _updatedAt?: string
   body?: SanityBlock[]
   author?: { name: string; image?: Parameters<typeof urlFor>[0] }
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Helpers                                                                   */
+/* -------------------------------------------------------------------------- */
 
 function slugify(text: string) {
   return text
@@ -75,6 +51,105 @@ function slugify(text: string) {
     .replace(/\s+/g, '-')
 }
 
+// Safely extract plain text from React children (strings, arrays, elements).
+// `String(children)` returns "[object Object]" for non-string children,
+// which breaks the heading ids used by the table of contents.
+function getText(node: React.ReactNode): string {
+  if (typeof node === 'string' || typeof node === 'number') return String(node)
+  if (Array.isArray(node)) return node.map(getText).join('')
+  if (React.isValidElement(node)) {
+    return getText((node.props as { children?: React.ReactNode }).children)
+  }
+  return ''
+}
+
+// Build a clean ~155 character meta description from the post's plain text.
+function buildExcerpt(text?: string, maxLength = 155) {
+  if (!text) return undefined
+  const clean = text.replace(/\s+/g, ' ').trim()
+  if (!clean) return undefined
+  if (clean.length <= maxLength) return clean
+  return clean.slice(0, maxLength).trimEnd() + '…'
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Static generation                                                         */
+/* -------------------------------------------------------------------------- */
+
+// Pre-render every published post at build time. Posts published later are
+// still rendered on demand and refreshed through the revalidate setting.
+export async function generateStaticParams() {
+  const slugs = await client.fetch<{ slug: string }[]>(
+    `*[_type == "post" && defined(slug.current)]{ "slug": slug.current }`
+  )
+  return slugs.map(({ slug }) => ({ slug }))
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Metadata                                                                  */
+/* -------------------------------------------------------------------------- */
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+
+  const query = `*[_type == "post" && slug.current == $slug][0]{
+    title,
+    "text": pt::text(body),
+    mainImage,
+    publishedAt,
+    _updatedAt,
+    author->{ name }
+  }`
+
+  const post = await client.fetch(
+    query,
+    { slug },
+    { next: { revalidate: REVALIDATE_SECONDS } }
+  )
+
+  if (!post) {
+    return {
+      title: 'Post Not Found | MamaSure',
+      robots: { index: false, follow: false },
+    }
+  }
+
+  const description = buildExcerpt(post.text) || DEFAULT_DESCRIPTION
+  const canonical = `${BASE_URL}/blog/${slug}`
+
+  // 1200x630 is the recommended Open Graph image size
+  const imageUrl = post.mainImage
+    ? urlFor(post.mainImage).width(1200).height(630).fit('crop').url()
+    : undefined
+
+  return {
+    title: `${post.title} | MamaSure`,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title: post.title,
+      description,
+      type: 'article',
+      url: canonical,
+      siteName: 'MamaSure',
+      publishedTime: post.publishedAt,
+      modifiedTime: post._updatedAt,
+      authors: post.author?.name ? [post.author.name] : undefined,
+      images: imageUrl ? [{ url: imageUrl, width: 1200, height: 630, alt: post.title }] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description,
+      images: imageUrl ? [imageUrl] : [],
+    },
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Data fetching                                                             */
+/* -------------------------------------------------------------------------- */
+
 async function getPostAndRelated(slug: string) {
   const postQuery = `*[_type == "post" && slug.current == $slug][0]{
     _id,
@@ -82,9 +157,20 @@ async function getPostAndRelated(slug: string) {
     slug,
     mainImage,
     publishedAt,
+    _updatedAt,
     body,
     author->{ name, image }
   }`
+
+  const post: Post | null = await client.fetch(
+    postQuery,
+    { slug },
+    { next: { revalidate: REVALIDATE_SECONDS } }
+  )
+
+  if (!post) {
+    return { post: null, relatedPosts: [] as Post[], nextPost: null as Post | null }
+  }
 
   const relatedQuery = `*[_type == "post" && slug.current != $slug] | order(publishedAt desc)[0...3]{
     _id,
@@ -94,25 +180,39 @@ async function getPostAndRelated(slug: string) {
     author->{ name }
   }`
 
-  const nextQuery = `*[_type == "post" && slug.current != $slug] | order(publishedAt desc)[0]{
-    title,
-    slug
-  }`
+  // "Next article" = the post published just before this one.
+  // If this post has no publishedAt, fall back to the latest other post.
+  const nextQuery = post.publishedAt
+    ? `*[_type == "post" && slug.current != $slug && publishedAt < $publishedAt] | order(publishedAt desc)[0]{
+        title,
+        slug
+      }`
+    : `*[_type == "post" && slug.current != $slug] | order(publishedAt desc)[0]{
+        title,
+        slug
+      }`
 
-  const [post, relatedPosts, nextPost] = await Promise.all([
-    client.fetch(postQuery, { slug }, { next: { revalidate: 60 } }),
-    client.fetch(relatedQuery, { slug }, { next: { revalidate: 60 } }),
-    client.fetch(nextQuery, { slug }, { next: { revalidate: 60 } }),
+  const [relatedPosts, nextPost] = await Promise.all([
+    client.fetch<Post[]>(
+      relatedQuery,
+      { slug },
+      { next: { revalidate: REVALIDATE_SECONDS } }
+    ),
+    client.fetch<Post | null>(
+      nextQuery,
+      { slug, publishedAt: post.publishedAt ?? '' },
+      { next: { revalidate: REVALIDATE_SECONDS } }
+    ),
   ])
 
   return { post, relatedPosts, nextPost }
 }
 
-export default async function SinglePostPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
+/* -------------------------------------------------------------------------- */
+/*  Page                                                                      */
+/* -------------------------------------------------------------------------- */
+
+export default async function SinglePostPage({ params }: Props) {
   const { slug } = await params
   const { post, relatedPosts, nextPost } = await getPostAndRelated(slug)
 
@@ -122,7 +222,10 @@ export default async function SinglePostPage({
 
   const headings =
     post.body
-      ?.filter((block: SanityBlock) => block._type === 'block' && block.style && ['h2', 'h3'].includes(block.style))
+      ?.filter(
+        (block: SanityBlock) =>
+          block._type === 'block' && block.style && ['h2', 'h3'].includes(block.style)
+      )
       .map((block: SanityBlock) => {
         const text = block.children?.map((c: SanityChild) => c.text || '').join('') || ''
         return {
@@ -135,17 +238,23 @@ export default async function SinglePostPage({
   const portableTextComponents = {
     block: {
       h2: ({ children }: { children?: React.ReactNode }) => {
-        const id = slugify(String(children))
+        const id = slugify(getText(children))
         return (
-          <h2 id={id} className="scroll-mt-24 text-xl sm:text-2xl font-bold text-gray-900 mt-8 sm:mt-10 mb-3 sm:mb-4">
+          <h2
+            id={id}
+            className="scroll-mt-24 text-xl sm:text-2xl font-bold text-gray-900 mt-8 sm:mt-10 mb-3 sm:mb-4"
+          >
             {children}
           </h2>
         )
       },
       h3: ({ children }: { children?: React.ReactNode }) => {
-        const id = slugify(String(children))
+        const id = slugify(getText(children))
         return (
-          <h3 id={id} className="scroll-mt-24 text-lg sm:text-xl font-semibold text-gray-900 mt-6 sm:mt-8 mb-2 sm:mb-3">
+          <h3
+            id={id}
+            className="scroll-mt-24 text-lg sm:text-xl font-semibold text-gray-900 mt-6 sm:mt-8 mb-2 sm:mb-3"
+          >
             {children}
           </h3>
         )
@@ -153,9 +262,36 @@ export default async function SinglePostPage({
     },
   }
 
+  // Article structured data for Google
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    datePublished: post.publishedAt,
+    dateModified: post._updatedAt || post.publishedAt,
+    author: post.author?.name
+      ? { '@type': 'Person', name: post.author.name }
+      : undefined,
+    image: post.mainImage ? urlFor(post.mainImage).url() : undefined,
+    publisher: {
+      '@type': 'Organization',
+      name: 'MamaSure',
+      url: BASE_URL,
+    },
+    mainEntityOfPage: `${BASE_URL}/blog/${slug}`,
+  }
+
   return (
     <div className="bg-white pt-20 sm:pt-28 pb-16 sm:pb-20 text-gray-900 min-h-screen">
       <main className="mx-auto max-w-4xl px-4 sm:px-6">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            // Escape "<" so post content can never break out of the script tag
+            __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+          }}
+        />
+
         {/* Back to Blog Button */}
         <div className="mb-6 sm:mb-8">
           <Link
@@ -212,21 +348,26 @@ export default async function SinglePostPage({
 
         {/* Dynamic Table of Contents */}
         {headings.length > 0 && (
-          <nav className="mb-8 sm:mb-10 rounded-xl border border-purple-100 bg-purple-50/50 p-4 sm:p-6">
+          <nav
+            aria-label="Table of contents"
+            className="mb-8 sm:mb-10 rounded-xl border border-purple-100 bg-purple-50/50 p-4 sm:p-6"
+          >
             <h2 className="text-xs font-bold uppercase tracking-wider text-purple-800 mb-2 sm:mb-3">
               Table of Contents
             </h2>
             <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
-              {headings.map((h: { text: string; level?: string; id: string }, index: number) => (
-                <li key={index} className={h.level === 'h3' ? 'pl-3 sm:pl-4' : ''}>
-                  <a
-                    href={`#${h.id}`}
-                    className="text-purple-700 hover:text-purple-900 hover:underline font-medium block py-0.5"
-                  >
-                    • {h.text}
-                  </a>
-                </li>
-              ))}
+              {headings.map(
+                (h: { text: string; level?: string; id: string }, index: number) => (
+                  <li key={`${h.id}-${index}`} className={h.level === 'h3' ? 'pl-3 sm:pl-4' : ''}>
+                    <a
+                      href={`#${h.id}`}
+                      className="text-purple-700 hover:text-purple-900 hover:underline font-medium block py-0.5"
+                    >
+                      • {h.text}
+                    </a>
+                  </li>
+                )
+              )}
             </ul>
           </nav>
         )}

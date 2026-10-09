@@ -1,5 +1,5 @@
-import Navbar from "@/components/layout/navbar/Navbar"; // Adjust path to your Navbar
-import Footer from "@/components/layout/Footer"; // Adjust path to your Footer
+import Navbar from "@/components/layout/navbar/Navbar";
+import Footer from "@/components/layout/Footer"; 
 
 export default function BlogLayout({
   children,
