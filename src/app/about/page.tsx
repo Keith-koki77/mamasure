@@ -103,7 +103,7 @@ function usePrefersReducedMotion(): boolean {
 const FOUNDERS: Founder[] = [
   {
     name: "Kellen Njuguna",
-    role: "Founder",
+    role: "Founder & CEO",
     image: "/team/kellen-njuguna.jpg",
     contribution: "The personal story behind Mama Sure",
     shortBio:
@@ -114,9 +114,9 @@ const FOUNDERS: Founder[] = [
   },
   {
     name: "Joseph Mumo",
-    role: "Co-Founder",
+    role: "Co-Founder & CFO",
     image: "/team/joseph-mumo.jpg",
-    contribution: "A fresh perspective that sharpened the idea",
+    contribution: "A financial master piece perspective that sharpened the idea",
     shortBio:
       "Joseph brings a different perspective to the Mama Sure journey, helping challenge and strengthen the original idea.",
     fullBio:
@@ -124,16 +124,15 @@ const FOUNDERS: Founder[] = [
     socials: [],
   },
   {
-    name: "Our Third Co-Founder",
-    role: "Co-Founder",
-    image: "/team/third-founder.jpg",
-    contribution: "A shared conviction, a different strength",
+    name: "Keith Koki",
+    role: "Co-Founder & CTO",
+    image: "/team/keith-koki.jpg",
+    contribution: "A technical conviction that actialized the product",
     shortBio:
-      "A shared conviction, a different perspective and a commitment to building a better way for women to prepare.",
+      "A shared conviction, a different perspective and a passion to build a healthtech solution forwomen to prepare.",
     fullBio:
-      "Mama Sure grew through conversations, questions and possibilities shared by three people who came together around a common societal problem.\n\nEach founder came with a different perspective, different experiences and different strengths.\n\nBut we were united by the same belief: women deserve a better way to prepare for maternal healthcare.",
+    "Driven by curiosity and a passion for creating impactful digital experiences, Keith has always naturally gravitated toward building products that solve real-world problems.\n\nHis journey into Mama Sure was a convergence of his distinct backgrounds. Holding a degree in Health Sciences with a specialization in Clinical Chemistry, Keith had a long-standing interest in building solutions within the health-tech and insure-tech spaces. When he met the co-founding team during a design thinking program, that shared ambition immediately clicked.\n\nBringing his technical expertise in full-stack software development and UI/UX product design, Keith leads the efforts in actualizing Mama Sure from concept into a seamless, reliable platform. His goal is simple: to build robust, user-centered digital tools that enable women to prepare financially and navigate their pregnancy journey with total confidence.",
     socials: [],
-    comingSoon: true,
   },
 ];
 
@@ -477,6 +476,11 @@ function FounderCard({ founder }: { founder: Founder }) {
     document.body.style.overflow = "hidden";
     dialog.showModal();
 
+    // Always start reading from the top of the story.
+    qsa(dialog, "[data-dialog-scroll]").forEach((el) => {
+      el.scrollTop = 0;
+    });
+
     if (reduced) return;
 
     // Panel rises in, then the content lines up one after another.
@@ -583,9 +587,26 @@ function FounderCard({ founder }: { founder: Founder }) {
             // A click on the backdrop (the dialog element itself) closes it.
             if (event.target === event.currentTarget) closeProfile();
           }}
-          className="m-auto max-h-[92vh] w-[min(58rem,calc(100%-1.5rem))] overflow-hidden rounded-[2rem] bg-white p-0 text-[#29122F] shadow-[0_40px_120px_rgba(50,19,59,0.45)] backdrop:bg-[#32133B]/70 backdrop:backdrop-blur-sm"
+          className="m-auto max-h-[92vh] max-h-[92dvh] w-[min(58rem,calc(100%-1.5rem))] overflow-hidden rounded-[2rem] bg-white p-0 text-[#29122F] shadow-[0_40px_120px_rgba(50,19,59,0.45)] backdrop:bg-[#32133B]/70 backdrop:backdrop-blur-sm"
         >
-          <div className="grid max-h-[92vh] md:grid-cols-[.75fr_1.25fr]">
+          {/*
+            Layout note: the grid has NO max-height of its own. Only the story
+            column is capped (max-h + overflow-y-auto), so it becomes the
+            scroll container while the portrait column stretches beside it.
+            The close button is a sibling of the scroller so it stays pinned
+            while the story scrolls.
+          */}
+          <div className="relative grid md:grid-cols-[.75fr_1.25fr]">
+            {/* Close button (pinned, does not scroll with the story) */}
+            <button
+              type="button"
+              onClick={closeProfile}
+              aria-label="Close profile"
+              className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-[#E9DDEB] bg-white text-[#71117F] shadow-sm transition hover:bg-[#F3E4F4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A914C7]"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
             {/* Portrait */}
             <div className="relative hidden bg-[#F3E4F4] md:block">
               <FounderPhoto founder={founder} sizes="320px" />
@@ -601,17 +622,13 @@ function FounderCard({ founder }: { founder: Founder }) {
               </div>
             </div>
 
-            {/* Story */}
-            <div className="relative overflow-y-auto p-7 sm:p-10">
-              <button
-                type="button"
-                onClick={closeProfile}
-                aria-label="Close profile"
-                className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-[#E9DDEB] bg-white text-[#71117F] transition hover:bg-[#F3E4F4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A914C7]"
-              >
-                <X className="h-4 w-4" />
-              </button>
-
+            {/* Story (the scrollable column) */}
+            <div
+              data-dialog-scroll
+              tabIndex={0}
+              aria-label={`${founder.name}'s story`}
+              className="max-h-[92vh] max-h-[92dvh] overflow-y-auto overscroll-contain p-7 pb-10 focus:outline-none sm:p-10 sm:pb-12"
+            >
               <p
                 data-dialog-item
                 className="pr-12 text-sm font-bold text-[#A914C7] md:hidden"
@@ -949,7 +966,7 @@ export default function AboutPage() {
               <div className="relative overflow-hidden rounded-[2.5rem] border border-white/70 bg-white/50 p-3 shadow-[0_35px_100px_rgba(74,31,86,0.12)] backdrop-blur">
                 <div className="relative aspect-[4/4.5] overflow-hidden rounded-[2rem] bg-[#E9D8EC]">
                   <Image
-                    src="/about-hero.png"
+                    src="/about-hero.jpg"
                     alt="Woman preparing for motherhood"
                     fill
                     className="object-cover"
