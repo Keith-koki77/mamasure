@@ -3,6 +3,8 @@ import { Poppins } from "next/font/google";
 
 import "./globals.css";
 
+import TawkWidget from "@/components/TawkWidget";
+
 //import Navbar from "@/components/layout/Navbar";
 //import Footer from "@/components/layout/Footer";
 
@@ -56,6 +58,9 @@ export default function RootLayout({
           {/* Global Footer */}
           {/*<Footer />*/}
         </div>
+
+        {/* Tawk.to live chat */}
+        <TawkWidget />
       </body>
     </html>
   );
